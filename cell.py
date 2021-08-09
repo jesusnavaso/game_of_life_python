@@ -21,3 +21,6 @@ class Cell:
         cell_status = "Alive" if self.status else "Dead"
         return f"({self.x_pos},{self.y_pos}): {cell_status}"
 
+    def __hash__(self):
+        return self.x_pos*10000+self.y_pos
+
