@@ -92,20 +92,19 @@ def get_next_generation(universe):
 
 
 def main():
+    icon = pygame.image.load('resources/icon.png')
+    pygame.display.set_icon(icon)
     game_window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     universe = set_initial_state(n_cells_x, n_cells_y)
     pygame.display.set_caption('Game of Life')
-    count = 0
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-        game_window.fill(colors.WHITE)
+        # game_window.fill(colors.WHITE)
         draw_current_universe(current_universe=universe, window=game_window, cell_size=block_size)
         pygame.display.update()
-        # pygame.image.save(game_window, "output/screenshot" + str(count) + ".jpg")
-        # count += 1
         universe = get_next_generation(universe=universe)
         generation_clock.tick(refresh_rate)
 
@@ -113,11 +112,11 @@ def main():
 if __name__ == '__main__':
     error_checking()
     WINDOW_WIDTH = 500
-    WINDOW_HEIGHT = 800
+    WINDOW_HEIGHT = 720
 
     block_size = 10
     generation_clock = pygame.time.Clock()
-    refresh_rate = 20
+    refresh_rate = 40
 
     # The zone where the cells live will be squared
     n_cells_x = int(min(WINDOW_WIDTH, WINDOW_HEIGHT) / block_size)
