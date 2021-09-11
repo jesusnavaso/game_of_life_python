@@ -1,15 +1,17 @@
 __author__ = "Jesús Navas Orozco"
 
-from pygame.surface import Surface
-
 """
 Conway's Game of Life.
 Cellular automaton made with pygame
 """
-import pygame
 import sys
-from cell import Cell
+import tkinter as tk
+
+import pygame
+from pygame.surface import Surface
+
 import colors
+from cell import Cell
 
 
 def create_background():
@@ -29,15 +31,26 @@ def determine_status_by_neighbours(cell: Cell, neighbours: int):
         cell.status = False
 
 
+def draw_counter(generation_counter: int, screen):
+    # my_rect = pygame.Rect(WINDOW_WIDTH, 0, size, size)
+    my_font = pygame.font.SysFont("Arial", 20)
+    counter_text = my_font.render("Generation:", True, colors.BLACK)
+    counter = my_font.render("# " + str(generation_counter), True, colors.BLACK)
+    screen.blit(counter_text, (0, WINDOW_HEIGHT-TOOLBAT_PIXEL_SIZE))
+    screen.blit(counter, (0, WINDOW_HEIGHT - TOOLBAT_PIXEL_SIZE + 20))
+    # pygame.display.update(pygame.draw.rect(screen, colors.WHITE, my_rect))
+
+
+
 def draw_current_universe(currently_alive_cells: set[Cell], window, cell_size: int):
     for cell in currently_alive_cells:
         cell_rect = pygame.Rect(cell.x_pos * cell_size, cell.y_pos * cell_size, cell_size, cell_size)
         pygame.draw.rect(window, colors.BLACK, cell_rect)
 
 
-def draw_grid(game_window):
+def draw_grid(screen):
     for coordinate_pair in grid_coordinates:
-        pygame.draw.line(game_window, color=colors.GRAY, start_pos=coordinate_pair[0], end_pos=coordinate_pair[1],
+        pygame.draw.line(screen, color=colors.GRAY, start_pos=coordinate_pair[0], end_pos=coordinate_pair[1],
                          width=2)
 
 
@@ -94,42 +107,49 @@ def set_initial_state(x_cells: int, y_cells: int):
 def main():
     icon = pygame.image.load('./resources/icon.png')
     pygame.display.set_icon(icon)
-    game_window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.RESIZABLE)
+    screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.RESIZABLE)
     alive_cells = set_initial_state(n_cells_x, n_cells_y)
     pygame.display.set_caption('Game of Life')
     # background_image = pygame.image.load("./resources/background.png").convert()
     background_image = create_background()
+    generation_counter = 1
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-        # game_window.fill(colors.WHITE)
+        # screen.fill(colors.WHITE)
         # To correct a slight displacement of the image background
-        game_window.blit(background_image, [-1, -1])
-        draw_current_universe(currently_alive_cells=alive_cells, window=game_window, cell_size=block_size)
-        # draw_grid(game_window)
+        screen.blit(background_image, [-1, -1])
+        draw_current_universe(currently_alive_cells=alive_cells, window=screen, cell_size=BLOCK_SIZE)
+        draw_counter(generation_counter, screen)
         pygame.display.update()
         alive_cells = get_next_generation(currently_alive_cells=alive_cells)
+        generation_counter += 1
         generation_clock.tick(refresh_rate)
 
 
 if __name__ == '__main__':
     error_checking()
-    WINDOW_WIDTH = 1920
-    WINDOW_HEIGHT = 1000
+    root = tk.Tk()
+    width = root.winfo_screenwidth()
+    height = root.winfo_screenheight()
 
-    block_size = 10
+    WINDOW_WIDTH = min(720, width)
+    WINDOW_HEIGHT = min(480, height)
+    TOOLBAR_WIDTH = 5  # In cells
+    BLOCK_SIZE = 10
+    TOOLBAT_PIXEL_SIZE = TOOLBAR_WIDTH*BLOCK_SIZE
+
     generation_clock = pygame.time.Clock()
     refresh_rate = 60
 
-    # The zone where the cells live will be squared
-    n_cells_x = int(WINDOW_WIDTH / block_size) - 5
-    n_cells_y = int(WINDOW_HEIGHT / block_size)
+    n_cells_x = int(WINDOW_WIDTH / BLOCK_SIZE)
+    n_cells_y = int(WINDOW_HEIGHT / BLOCK_SIZE) - TOOLBAR_WIDTH
 
     # grid_coordinates
-    grid_coordinates_x = [((a * block_size, 0), (a * block_size, WINDOW_HEIGHT)) for a in range(n_cells_x + 1)]
-    grid_coordinates_y = [((0, b * block_size), (WINDOW_WIDTH - 50, b * block_size)) for b in range(n_cells_y + 1)]
+    grid_coordinates_x = [((a * BLOCK_SIZE, 0), (a * BLOCK_SIZE, WINDOW_HEIGHT-TOOLBAT_PIXEL_SIZE)) for a in range(n_cells_x + 1)]
+    grid_coordinates_y = [((0, b * BLOCK_SIZE), (WINDOW_WIDTH, b * BLOCK_SIZE)) for b in range(n_cells_y + 1)]
     grid_coordinates = grid_coordinates_x + grid_coordinates_y
 
     main()
