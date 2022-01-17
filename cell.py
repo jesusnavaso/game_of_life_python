@@ -22,5 +22,4 @@ class Cell:
         return f"({self.x_pos},{self.y_pos}): {cell_status}"
 
     def __hash__(self):
-        return self.x_pos*10000+self.y_pos
-
+        return self.x_pos * 10000 + self.y_pos

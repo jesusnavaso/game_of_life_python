@@ -36,7 +36,7 @@ def draw_counter(generation_counter: int, screen):
     my_font = pygame.font.SysFont("Arial", 20)
     counter_text = my_font.render("Generation:", True, colors.BLACK)
     counter = my_font.render("# " + str(generation_counter), True, colors.BLACK)
-    screen.blit(counter_text, (0, WINDOW_HEIGHT-TOOLBAR_PIXEL_SIZE))
+    screen.blit(counter_text, (0, WINDOW_HEIGHT - TOOLBAR_PIXEL_SIZE))
     screen.blit(counter, (0, WINDOW_HEIGHT - TOOLBAR_PIXEL_SIZE + 20))
 
 
@@ -85,7 +85,9 @@ def get_next_generation(currently_alive_cells: set[Cell]):
     for cell in currently_alive_cells:
         new_candidates = new_candidates.union(get_neighbours(cell))
     for cell in new_candidates:
-        determine_status_by_neighbours(cell, get_number_of_alive_neighbours(neighbours=get_neighbours(cell), currently_alive_cells=currently_alive_cells))
+        determine_status_by_neighbours(cell,
+                                       get_number_of_alive_neighbours(neighbours=get_neighbours(cell),
+                                                                      currently_alive_cells=currently_alive_cells))
 
     return set(filter(lambda x: x.status, new_candidates))
 
@@ -136,7 +138,7 @@ if __name__ == '__main__':
     WINDOW_HEIGHT = min(480, height)
     TOOLBAR_WIDTH = 5  # In cells
     BLOCK_SIZE = 10
-    TOOLBAR_PIXEL_SIZE = TOOLBAR_WIDTH*BLOCK_SIZE
+    TOOLBAR_PIXEL_SIZE = TOOLBAR_WIDTH * BLOCK_SIZE
 
     generation_clock = pygame.time.Clock()
     refresh_rate = 60
@@ -145,7 +147,8 @@ if __name__ == '__main__':
     n_cells_y = int(WINDOW_HEIGHT / BLOCK_SIZE) - TOOLBAR_WIDTH
 
     # grid_coordinates
-    grid_coordinates_x = [((a * BLOCK_SIZE, 0), (a * BLOCK_SIZE, WINDOW_HEIGHT-TOOLBAR_PIXEL_SIZE)) for a in range(n_cells_x + 1)]
+    grid_coordinates_x = [((a * BLOCK_SIZE, 0), (a * BLOCK_SIZE, WINDOW_HEIGHT - TOOLBAR_PIXEL_SIZE)) for a in
+                          range(n_cells_x + 1)]
     grid_coordinates_y = [((0, b * BLOCK_SIZE), (WINDOW_WIDTH, b * BLOCK_SIZE)) for b in range(n_cells_y + 1)]
     grid_coordinates = grid_coordinates_x + grid_coordinates_y
 
