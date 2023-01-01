@@ -6,6 +6,7 @@ Cellular automaton made with pygame
 """
 import sys
 import tkinter as tk
+
 import pygame
 from pygame.surface import Surface
 
@@ -22,19 +23,15 @@ def create_background():
 
 
 def determine_status_by_neighbours(cell: Cell, neighbours: int):
-    if not cell.status and neighbours == 3:
-        cell.status = True
-    if cell.status and (neighbours == 2 or neighbours == 3):
-        pass
-    else:
-        cell.status = False
+    if not cell.alive and neighbours == 3:
+        cell.alive = True
+    elif cell.alive and (neighbours < 2 or neighbours > 3):
+        cell.alive = False
 
 
 def draw_counter(generation_counter: int, screen):
     # my_rect = pygame.Rect(0, WINDOW_HEIGHT, TOOLBAR_PIXEL_SIZE, TOOLBAR_PIXEL_SIZE)
     # pygame.display.update(pygame.draw.rect(screen, colors.BLUE, my_rect))
-    my_font = pygame.font.SysFont("Arial", 20)
-    counter_text = my_font.render("Generation:", True, colors.BLACK)
     counter = my_font.render("# " + str(generation_counter), True, colors.BLACK)
     screen.blit(counter_text, (0, WINDOW_HEIGHT - TOOLBAR_PIXEL_SIZE))
     screen.blit(counter, (0, WINDOW_HEIGHT - TOOLBAR_PIXEL_SIZE + 20))
@@ -48,8 +45,7 @@ def draw_current_universe(currently_alive_cells: set[Cell], window, cell_size: i
 
 def draw_grid(screen):
     for coordinate_pair in grid_coordinates:
-        pygame.draw.line(screen, color=colors.GRAY, start_pos=coordinate_pair[0], end_pos=coordinate_pair[1],
-                         width=2)
+        pygame.draw.line(screen, color=colors.GRAY, start_pos=coordinate_pair[0], end_pos=coordinate_pair[1], width=2)
 
 
 def error_checking():
@@ -77,7 +73,7 @@ def get_neighbours(cell: Cell):
     # Use set structure to avoid repeated cells
     neighbours_positions = {(x1, y1), (x1, y), (x1, y2), (x, y1), (x, y2), (x2, y1), (x2, y), (x2, y2)} - {(x, y)}
 
-    return {Cell(status=False, x_pos=a, y_pos=b) for a, b in neighbours_positions}
+    return {Cell(alive=False, x_pos=a, y_pos=b) for a, b in neighbours_positions}
 
 
 def get_next_generation(currently_alive_cells: set[Cell]):
@@ -89,7 +85,7 @@ def get_next_generation(currently_alive_cells: set[Cell]):
                                        get_number_of_alive_neighbours(neighbours=get_neighbours(cell),
                                                                       currently_alive_cells=currently_alive_cells))
 
-    return set(filter(lambda x: x.status, new_candidates))
+    return set(filter(lambda x: x.alive, new_candidates))
 
 
 def get_number_of_alive_neighbours(neighbours: set[Cell], currently_alive_cells: set[Cell]):
@@ -100,7 +96,7 @@ def set_initial_state(x_cells: int, y_cells: int):
     center_x, center_y = (round(x_cells / 2), round(y_cells / 2))
     initial_alive_cells_positions = {(center_x, center_y), (center_x, center_y - 1), (center_x, center_y + 1),
                                      (center_x - 1, center_y - 1), (center_x + 1, center_y)}
-    return {Cell(x_pos=x, y_pos=y, status=True) for x, y in initial_alive_cells_positions}
+    return {Cell(x_pos=x, y_pos=y, alive=True) for x, y in initial_alive_cells_positions}
 
 
 def main():
@@ -130,10 +126,13 @@ def main():
 
 if __name__ == '__main__':
     error_checking()
+
+    # Fetch the dimensions of the screen of the device
     root = tk.Tk()
     width = root.winfo_screenwidth()
     height = root.winfo_screenheight()
 
+    # Setting the game screen dimensions
     WINDOW_WIDTH = min(720, width)
     WINDOW_HEIGHT = min(480, height)
     TOOLBAR_WIDTH = 5  # In cells
@@ -151,5 +150,9 @@ if __name__ == '__main__':
                           range(n_cells_x + 1)]
     grid_coordinates_y = [((0, b * BLOCK_SIZE), (WINDOW_WIDTH, b * BLOCK_SIZE)) for b in range(n_cells_y + 1)]
     grid_coordinates = grid_coordinates_x + grid_coordinates_y
+
+    # Prerender fonts
+    my_font = pygame.font.SysFont("Arial", 20)
+    counter_text = my_font.render("Generation:", True, colors.BLACK)
 
     main()
