@@ -100,7 +100,7 @@ def set_initial_state(x_cells: int, y_cells: int):
 
 
 def main():
-    icon = pygame.image.load('./resources/icon.png')
+    icon = pygame.image.load('./resources/icon2.png')
     pygame.display.set_icon(icon)
     screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.RESIZABLE)
     alive_cells = set_initial_state(n_cells_x, n_cells_y)
@@ -114,7 +114,7 @@ def main():
                 pygame.quit()
                 sys.exit()
         # screen.fill(colors.WHITE)
-        # To correct a slight displacement of the image background
+        # This corrects a slight displacement of the image background
         screen.blit(background_image, [-1, -1])
         draw_current_universe(currently_alive_cells=alive_cells, window=screen, cell_size=BLOCK_SIZE)
         draw_counter(generation_counter, screen)
@@ -133,8 +133,8 @@ if __name__ == '__main__':
     height = root.winfo_screenheight()
 
     # Setting the game screen dimensions
-    WINDOW_WIDTH = min(720, width)
-    WINDOW_HEIGHT = min(480, height)
+    WINDOW_WIDTH = min(1030, width)
+    WINDOW_HEIGHT = min(770, height)
     TOOLBAR_WIDTH = 5  # In cells
     BLOCK_SIZE = 10
     TOOLBAR_PIXEL_SIZE = TOOLBAR_WIDTH * BLOCK_SIZE
